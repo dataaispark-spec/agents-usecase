@@ -1,2 +1,5 @@
-# agents-usecase
-AI Agents Use cases for BFSI, FINTECH, REATIL, LOGISTICS, HEALTHCARE, MARKETING
+# AI agents-use cases + Industries  
+AI Agents Use cases for BFSI, Fintech, Retail , Logistics, Healthcare, Marketing
+
+
+
