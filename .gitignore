@@ -1,35 +1,60 @@
-```markdown
-# Documentation and reports
-*.md
-
-# Data pipeline specific
-fraud_agents/__pycache__/
-fraud_agents/*.pyc
-*.pyc
+# Python
 __pycache__/
-
-# Dependencies
-.venv/
-venv/
-.env
-.env.local
-.env.*
-
-# Build artifacts
+*.py[cod]
+*$py.class
+*.so
+.Python
 build/
+develop-eggs/
 dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
 *.egg-info/
+.installed.cfg
+*.egg
 
-# Logs and temporary files
-*.log
-*.tmp
-*.swp
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+.coverage.*
+.noserc
+.testing_data/
 
-# Editors
+# Virtual environments
+venv/
+ENV/
+.env/
+.venv/
+env.bak/
+venv.bak/
+
+# IDE
 .vscode/
 .idea/
+*.swp
+*.swo
 
-# OS generated files
+# OS
 .DS_Store
 Thumbs.db
-```
+
+# Logs
+*.log
+
+# Environment variables
+.env*
+!.env.example
+
+# Coverage
+coverage/
+htmlcov/
+.tox/
+.nox/
