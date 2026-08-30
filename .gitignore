@@ -1,65 +1,58 @@
-```
-# Database
-fraud_cases.db
-
-# Environment variables
-.env
-.env.local
-*.env.*
-
 # Python
 __pycache__/
 *.pyc
 *.pyo
 *.pyd
 .Python
-env/
 venv/
 .venv/
-.venv-bak/
-.venv-dev/
-.venv-prod/
-.venv-test/
-.venv-tools/
-.python-version
-.python-history
-.pytest_cache/
-.mypy_cache/
+.env
+.env.local
+.env.*
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Testing
 .coverage
 coverage/
-
-# Dependencies
-node_modules/
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-
-# Build artifacts
-dist/
-build/
-*.egg-info/
-.eggs/
-.installed.cfg
-.tox/
-
-# Logs
-*.log
-
-# OS generated files
-.DS_Store
-.DS_Store?
-._*
-.Spotlight-V100
-.Trashes
-ehthumbs.db
-Thumbs.db
+htmlcov/
+.nosetests
+.pytest_cache/
 
 # IDE
 .vscode/
 .idea/
 *.swp
 *.swo
+*.tmp
 
-# Docker
-.dockerenv
-```
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# MyPy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Jupyter
+.ipynb_checkpoints/
