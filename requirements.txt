@@ -1,4 +1,35 @@
+# Production Requirements for Clerivon AI Fraud Detection
+
+# Core Framework
 streamlit>=1.28.0
-sqlite3
+openai>=1.14.0
+anthropic>=0.20.0
+requests>=2.31.0
+
+# MCP Server Support
+mcp[cli]>=1.0.0
+
+# Database - Production Grade
+psycopg2-binary>=2.9.9
+pgvector>=0.2.5
+
+# Authentication & Security
+authlib>=1.3.0
+flask-session>=0.6.0
+cryptography>=42.0.5
+
+# Utilities
+python-dotenv>=1.0.1
+pydantic>=2.6.3
+numpy>=1.26.4
 pandas>=2.0.0
+
+# Visualization
 plotly>=5.17.0
+
+# Monitoring & Logging
+prometheus-client>=0.20.0
+
+# Testing (dev only)
+pytest>=8.1.1
+pytest-asyncio>=0.23.5

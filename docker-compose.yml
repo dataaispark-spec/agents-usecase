@@ -1,0 +1,84 @@
+# Docker Compose for Production Deployment
+# Includes: App, PostgreSQL+pgvector, MCP Server
+
+version: '3.8'
+
+services:
+  # PostgreSQL with pgvector extension
+  postgres:
+    image: pgvector/pgvector:pg16
+    container_name: clerivon-postgres
+    environment:
+      POSTGRES_DB: clerivon_fraud
+      POSTGRES_USER: clerivon_user
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-secure_password_change_in_prod}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init-db.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U clerivon_user -d clerivon_fraud"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - clerivon-network
+
+  # Main Streamlit Application
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: clerivon-app
+    environment:
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_NAME=clerivon_fraud
+      - DB_USER=clerivon_user
+      - DB_PASSWORD=${DB_PASSWORD:-secure_password_change_in_prod}
+      - LLM_PROVIDER=${LLM_PROVIDER:-openai}
+      - OPENAI_API_KEY=${OPENAI_API_KEY:-}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY:-}
+      - SECRET_KEY=${SECRET_KEY:-change_this_secret_key}
+      - SSO_PROVIDER=${SSO_PROVIDER:-azure_ad}
+      - AZURE_CLIENT_ID=${AZURE_CLIENT_ID:-}
+      - AZURE_CLIENT_SECRET=${AZURE_CLIENT_SECRET:-}
+      - AZURE_TENANT_ID=${AZURE_TENANT_ID:-}
+    ports:
+      - "8501:8501"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - clerivon-network
+    restart: unless-stopped
+
+  # MCP Server (optional - can run separately)
+  mcp-server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: clerivon-mcp
+    command: ["python", "-m", "fraud_agents.mcp_server"]
+    environment:
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_NAME=clerivon_fraud
+      - DB_USER=clerivon_user
+      - DB_PASSWORD=${DB_PASSWORD:-secure_password_change_in_prod}
+    ports:
+      - "8765:8765"
+    depends_on:
+      - postgres
+    networks:
+      - clerivon-network
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+    driver: local
+
+networks:
+  clerivon-network:
+    driver: bridge
