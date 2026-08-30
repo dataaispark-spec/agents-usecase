@@ -94,7 +94,7 @@ class GuardrailEngine:
 
     def validate_input(self, user_input: str, context: Dict) -> GuardrailResult:
         # Check for prompt injection attempts
-        injection_keywords = ["ignore previous instructions", "system prompt", "developer mode"]
+        injection_keywords = ["ignore previous instructions", "system prompt", "developer mode", "drop table", "delete from"]
         if any(kw in user_input.lower() for kw in injection_keywords):
             return GuardrailResult(is_allowed=False, reason="Potential Prompt Injection Detected")
         
@@ -214,13 +214,28 @@ class AgentHarness:
     """
     The central wrapper that combines Model + Guardrails + Memory + Verification + Observability.
     This is the 'Prime Agent' controller.
+    
+    Usage:
+        def mock_model(task, context): return {"decision": "BLOCK", "evidence": ["high_risk"]}
+        harness = AgentHarness(model_client=mock_model)
+        result = await harness.execute("Check fraud", {}, ["RULE_1"])
     """
-    def __init__(self, model_client: Callable):
-        self.model = model_client
+    def __init__(self, model_client=None):
+        # Allow None for testing; in prod this is an LLM client
+        self.model = model_client or self._default_mock_model
         self.guardrails = GuardrailEngine()
         self.memory = MemoryEngine()
         self.verifier = VerificationEngine()
         self.obs = ObservabilityEngine()
+    
+    def _default_mock_model(self, task: str, context: str) -> Dict:
+        """Default mock model for testing without external LLM."""
+        return {
+            "decision": "BLOCK",
+            "evidence": ["impossible_travel", "high_risk_merchant"],
+            "reasoning": "Geo-velocity check failed",
+            "confidence": 0.95
+        }
 
     async def execute(self, task: str, context: Dict, policy_rules: List[str]) -> Dict:
         trace = self.obs.start_span("harness_execution", metadata={"task": task})
@@ -231,7 +246,7 @@ class AgentHarness:
             if not safety_check.is_allowed:
                 raise ValueError(f"Guardrail Blocked: {safety_check.reason}")
             
-            safe_task = safety_check.sanitized_input
+            safe_task = safety_check.sanitized_input or task
             
             # 2. Memory Retrieval (RAG)
             relevant_memories = await self.memory.search_long_term(safe_task)
@@ -244,7 +259,7 @@ class AgentHarness:
             self.memory.add_to_short_term("assistant", raw_response)
             
             # 4. Output Guardrails
-            output_check = self.guardrails.validate_output(raw_response, policy_rules)
+            output_check = self.guardrails.validate_output(str(raw_response), policy_rules)
             if not output_check.is_allowed:
                 raise ValueError(f"Output Guardrail Failed: {output_check.reason}")
 
@@ -259,7 +274,8 @@ class AgentHarness:
                 # Self-Correction Trigger
                 print(f"[HARNESS] Verification Failed. Triggering correction: {verification.correction_suggestion}")
                 # In full impl: Recursive call with correction prompt
-                raw_response["correction_flag"] = verification.correction_suggestion
+                if isinstance(raw_response, dict):
+                    raw_response["correction_flag"] = verification.correction_suggestion
 
             self.obs.end_span(trace.span_id, "SUCCESS")
             
