@@ -1,37 +1,28 @@
 # Changelog
 
+## [1.2.0] — 2026-09-01
+
+### Cleanup (main)
+
+- Removed obsolete artifacts: `.bundle` / `.zip`, nested `clerivon-fraud-detection-mas/`, committed `fraud_cases.db`, `generate_zip.py`
+- Removed unused modules: `database_prod.py`, `auth.py`, `data_pipeline.py`, `prime_agents.py`
+- Removed outdated docs: `DEPLOYMENT.md`, `VALIDATION_REPORT.md`, `ROADMAP.md`, `QUICKSTART_CLOUD.md`, `PUSH_INSTRUCTIONS.md`, `REPO_METADATA.md`
+- Removed non-lab tests: `tests/cloud/*`, `tests/e2e/*`
+- Slimmed `requirements.txt` to Streamlit + pydantic + dotenv (+ optional Postgres/MCP)
+- Clear, single-path **README**
+
 ## [1.1.2] — 2026-09-01
 
-### Demo readiness
-
-- `scripts/demo_check.py` — one-shot pipeline + harness + DB smoke test
-- `DEMO.md` — presenter playbook and checklist
-- Unit tests aligned with harness API (16/16)
-- `pytest.ini` with `pythonpath = .`
-- `.gitignore` for venv, `__pycache__`, local `.db`
-- Harness: use `model_dump()` instead of deprecated `.dict()`
+- `scripts/demo_check.py`, `DEMO.md`, harness unit tests (16), pytest.ini
 
 ## [1.1.1] — 2026-09-01
 
-### Rename alignment
-
-- Canonical repo: **dataaispark-spec/bfsi-agents-fraud-lab**
-- README, SETUP_LAB, REPO_METADATA clone/paths updated
+- Repo rename to `bfsi-agents-fraud-lab`
 
 ## [1.1.0] — 2026-09-01
 
-### Lab / pilot deployability
-
-- DB factory (`sqlite` / `postgres`)
-- Lab Postgres adapter, Docker lab overlay, entrypoint + auto-seed
-- Honest lab scope in UI Settings
-
-### Not claimed in 1.1.x
-
-- Live core-banking / OFAC / device APIs
-- Production SSO as default UI gate
-- SOC2 / bank TPS as verified CI metrics
+- Lab deploy: db factory, Docker lab overlay, entrypoint
 
 ## [1.0.0] — prior
 
-- Initial multi-agent demo, harness, Streamlit UI, docs
+- Initial multi-agent demo
