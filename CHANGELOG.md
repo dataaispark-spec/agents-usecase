@@ -1,28 +1,27 @@
 # Changelog
 
+## [1.2.1] — 2026-09-01
+
+### Verified demo release
+
+- Removed all committed `fraud_agents/__pycache__` bytecode
+- CI simplified to lab path: unit tests + `demo_check` + `demo_emulator` (no Docker Hub secrets required for green CI)
+- Added `scripts/demo_emulator.py` — headless DEMO.md flow
+- Demo verified: impossible_travel → REVIEW → human confirm → flywheel; normal → AUTO_APPROVE
+
 ## [1.2.0] — 2026-09-01
 
-### Cleanup (main)
-
-- Removed obsolete artifacts: `.bundle` / `.zip`, nested `clerivon-fraud-detection-mas/`, committed `fraud_cases.db`, `generate_zip.py`
-- Removed unused modules: `database_prod.py`, `auth.py`, `data_pipeline.py`, `prime_agents.py`
-- Removed outdated docs: `DEPLOYMENT.md`, `VALIDATION_REPORT.md`, `ROADMAP.md`, `QUICKSTART_CLOUD.md`, `PUSH_INSTRUCTIONS.md`, `REPO_METADATA.md`
-- Removed non-lab tests: `tests/cloud/*`, `tests/e2e/*`
-- Slimmed `requirements.txt` to Streamlit + pydantic + dotenv (+ optional Postgres/MCP)
-- Clear, single-path **README**
+- Slimmed repo: removed bundles, unused modules, outdated docs
+- Minimal `requirements.txt`; clear README
 
 ## [1.1.2] — 2026-09-01
 
-- `scripts/demo_check.py`, `DEMO.md`, harness unit tests (16), pytest.ini
+- `demo_check.py`, harness unit tests (16)
 
 ## [1.1.1] — 2026-09-01
 
-- Repo rename to `bfsi-agents-fraud-lab`
+- Rename to bfsi-agents-fraud-lab
 
 ## [1.1.0] — 2026-09-01
 
-- Lab deploy: db factory, Docker lab overlay, entrypoint
-
-## [1.0.0] — prior
-
-- Initial multi-agent demo
+- Lab deploy: db factory, Docker overlay

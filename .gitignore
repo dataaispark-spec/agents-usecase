@@ -20,6 +20,6 @@ fraud_cases.db
 .coverage
 htmlcov/
 
-# Build artifacts
+# Artifacts
 *.bundle
 *.zip

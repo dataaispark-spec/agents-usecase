@@ -1,5 +1,5 @@
 """
-Streamlit UI — BFSI Agents Fraud Lab v1.2.0
+Streamlit UI — BFSI Agents Fraud Lab v1.2.1
 Synthetic multi-agent demo: Live Feed → Case Review → Flywheel
 https://github.com/dataaispark-spec/bfsi-agents-fraud-lab
 """
@@ -18,7 +18,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from fraud_agents.agents import FraudDetectionPipeline, Transaction
 from fraud_agents.db_factory import db as get_db
 
-APP_VERSION = os.getenv("APP_VERSION", "1.2.0")
+APP_VERSION = os.getenv("APP_VERSION", "1.2.1")
 DB_BACKEND = os.getenv("DB_BACKEND", "sqlite")
 
 st.set_page_config(

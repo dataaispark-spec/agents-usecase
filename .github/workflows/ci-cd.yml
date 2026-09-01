@@ -1,125 +1,31 @@
-# GitHub Actions CI/CD Pipeline for Clerivon AI Fraud Detection
-# Builds, tests, and pushes Docker image to Docker Hub
-
-name: Build and Deploy
+name: Lab CI
 
 on:
   push:
-    branches: [main, master]
+    branches: [main]
   pull_request:
     branches: [main]
 
-env:
-  REGISTRY: docker.io
-  IMAGE_NAME: ${{ secrets.DOCKER_HUB_USERNAME }}/clerivon-fraud-detection
-
 jobs:
-  # Job 1: Lint and Test
   test:
     runs-on: ubuntu-latest
-    
-    services:
-      postgres:
-        image: pgvector/pgvector:pg16
-        env:
-          POSTGRES_DB: clerivon_fraud_test
-          POSTGRES_USER: clerivon_user
-          POSTGRES_PASSWORD: test_password
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-    
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-      
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
-      
-      - name: Install dependencies
+          python-version: "3.12"
+
+      - name: Install
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
-      
-      - name: Run linting (flake8)
-        run: |
-          pip install flake8
-          flake8 fraud_agents/ app.py --max-line-length=120 --ignore=E501,W503
-      
-      - name: Run tests
-        run: |
-          pytest tests/ -v --tb=short
-        env:
-          DB_HOST: localhost
-          DB_PORT: 5432
-          DB_NAME: clerivon_fraud_test
-          DB_USER: clerivon_user
-          DB_PASSWORD: test_password
-  
-  # Job 2: Build and Push Docker Image
-  build-and-push:
-    needs: test
-    runs-on: ubuntu-latest
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-      
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-      
-      - name: Login to Docker Hub
-        uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.DOCKER_HUB_USERNAME }}
-          password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
-      
-      - name: Extract metadata (tags, labels)
-        id: meta
-        uses: docker/metadata-action@v5
-        with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-          tags: |
-            type=raw,value=latest,enable={{is_default_branch}}
-            type=sha,prefix=,format=long
-            type=ref,event=branch
-      
-      - name: Build and push Docker image
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          file: ./Dockerfile
-          push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:buildcache
-          cache-to: type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:buildcache,mode=max
-  
-  # Job 3: Deploy to Production (Optional - requires Kubernetes or cloud setup)
-  deploy:
-    needs: build-and-push
-    runs-on: ubuntu-latest
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    environment: production
-    
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-      
-      - name: Deploy to Kubernetes (example)
-        run: |
-          echo "Deploy to your K8s cluster here"
-          # kubectl set image deployment/clerivon-app app=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
-        env:
-          KUBE_CONFIG: ${{ secrets.KUBE_CONFIG }}
-      
-      - name: Notify deployment success
-        run: |
-          echo "✅ Deployment successful: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}"
+
+      - name: Unit tests
+        run: pytest tests/unit -v --tb=short
+
+      - name: Demo readiness
+        run: python scripts/demo_check.py
+
+      - name: Demo emulator
+        run: python scripts/demo_emulator.py
