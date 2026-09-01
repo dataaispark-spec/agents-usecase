@@ -1,12 +1,11 @@
 """
-Streamlit UI — BFSI Agents Fraud Lab (Clerivon AI) v1.1.1
+Streamlit UI — BFSI Agents Fraud Lab v1.2.0
 Synthetic multi-agent demo: Live Feed → Case Review → Flywheel
-Repo: https://github.com/dataaispark-spec/bfsi-agents-fraud-lab
+https://github.com/dataaispark-spec/bfsi-agents-fraud-lab
 """
 
 from __future__ import annotations
 
-import json
 import os
 import random
 import sys
@@ -19,7 +18,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from fraud_agents.agents import FraudDetectionPipeline, Transaction
 from fraud_agents.db_factory import db as get_db
 
-APP_VERSION = os.getenv("APP_VERSION", "1.1.1")
+APP_VERSION = os.getenv("APP_VERSION", "1.2.0")
 DB_BACKEND = os.getenv("DB_BACKEND", "sqlite")
 
 st.set_page_config(
@@ -33,10 +32,6 @@ st.markdown(
     """
 <style>
     .main-header { font-size: 2.2rem; font-weight: 700; color: #1a1a2e; }
-    .case-card {
-        background-color: #f8f9fa; border-left: 4px solid #667eea;
-        border-radius: 5px; padding: 1rem; margin-bottom: 1rem;
-    }
 </style>
 """,
     unsafe_allow_html=True,
@@ -279,18 +274,17 @@ def settings_page(database):
     st.markdown(
         """
 ### Pipeline
-- Monitor → Investigator (synthetic tools) → Adjudicator → Explainer → Feedback
+Monitor → Investigator (synthetic tools) → Adjudicator → Explainer → Feedback
 
-### Not in this lab build
+### Not in this lab
 - Live core-banking / device / sanctions APIs
-- Production SSO (stubs only in `fraud_agents/auth.py`)
-- Bank-grade latency SLAs
+- Production SSO
+- Bank-grade SLAs
 
-See **SETUP_LAB.md** for deploy options.
+See **README.md** and **SETUP_LAB.md**.
 """
     )
-    metrics = database.get_flywheel_metrics()
-    st.json(metrics)
+    st.json(database.get_flywheel_metrics())
 
 
 if __name__ == "__main__":
