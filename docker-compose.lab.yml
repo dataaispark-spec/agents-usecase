@@ -1,13 +1,14 @@
 # Lab/pilot overlay — use with base compose:
 #   docker compose -f docker-compose.yml -f docker-compose.lab.yml up --build -d
 #
+# Repo: https://github.com/dataaispark-spec/bfsi-agents-fraud-lab
 # Default: SQLite on a named volume (simplest reliable pilot).
 # Set DB_BACKEND=postgres in .env to use the postgres service instead.
 
 services:
   app:
     environment:
-      - APP_VERSION=1.1.0
+      - APP_VERSION=1.1.1
       - DB_BACKEND=${DB_BACKEND:-sqlite}
       - FRAUD_DB_PATH=/data/fraud_cases.db
       - AUTO_SEED=${AUTO_SEED:-true}
@@ -33,7 +34,6 @@ services:
       - DB_BACKEND=${DB_BACKEND:-sqlite}
       - FRAUD_DB_PATH=/data/fraud_cases.db
 
-  # Postgres optional; only required when DB_BACKEND=postgres
   postgres:
     profiles: ["postgres"]
 

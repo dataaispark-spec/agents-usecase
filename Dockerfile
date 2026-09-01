@@ -1,11 +1,12 @@
-# Clerivon AI Fraud Detection — Lab/Pilot image (v1.1.0)
+# BFSI Agents Fraud Lab — image (v1.1.1)
+# https://github.com/dataaispark-spec/bfsi-agents-fraud-lab
 FROM python:3.12-slim
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
     PIP_NO_CACHE_DIR=1 \
     PIP_DISABLE_PIP_VERSION_CHECK=1 \
-    APP_VERSION=1.1.0 \
+    APP_VERSION=1.1.1 \
     DB_BACKEND=sqlite \
     FRAUD_DB_PATH=/data/fraud_cases.db \
     AUTO_SEED=true

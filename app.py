@@ -1,6 +1,7 @@
 """
-Streamlit UI for Clerivon AI Fraud Detection — Lab/Pilot v1.1.0
+Streamlit UI — BFSI Agents Fraud Lab (Clerivon AI) v1.1.1
 Synthetic multi-agent demo: Live Feed → Case Review → Flywheel
+Repo: https://github.com/dataaispark-spec/bfsi-agents-fraud-lab
 """
 
 from __future__ import annotations
@@ -18,11 +19,11 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from fraud_agents.agents import FraudDetectionPipeline, Transaction
 from fraud_agents.db_factory import db as get_db
 
-APP_VERSION = os.getenv("APP_VERSION", "1.1.0")
+APP_VERSION = os.getenv("APP_VERSION", "1.1.1")
 DB_BACKEND = os.getenv("DB_BACKEND", "sqlite")
 
 st.set_page_config(
-    page_title="Clerivon AI - Fraud Detection (Lab)",
+    page_title="BFSI Agents Fraud Lab",
     page_icon="🛡️",
     layout="wide",
     initial_sidebar_state="expanded",
@@ -95,13 +96,11 @@ def main():
 
     database = get_db()
 
-    st.sidebar.title("Clerivon AI")
-    st.sidebar.caption(f"Lab / Pilot **v{APP_VERSION}** · DB: `{DB_BACKEND}`")
+    st.sidebar.title("BFSI Agents Lab")
+    st.sidebar.caption(f"Fraud lab **v{APP_VERSION}** · DB: `{DB_BACKEND}`")
     menu = ["Live Feed", "Case Review", "Flywheel Analytics", "Settings"]
     choice = st.sidebar.selectbox("Menu", menu)
-    st.sidebar.info(
-        "Synthetic tools only. Not connected to live banking systems."
-    )
+    st.sidebar.info("Synthetic tools only. Not connected to live banking systems.")
 
     if choice == "Live Feed":
         live_feed_page(database)
@@ -115,7 +114,7 @@ def main():
 
 def live_feed_page(database):
     st.markdown('<p class="main-header">Live Transaction Feed</p>', unsafe_allow_html=True)
-    st.markdown("Real-time **demo** fraud detection — 5-agent pipeline (synthetic data)")
+    st.markdown("Demo fraud detection — 5-agent pipeline (synthetic BFSI data)")
 
     col1, col2, col3 = st.columns([2, 2, 1])
     with col1:
@@ -272,6 +271,7 @@ def flywheel_page(database):
 def settings_page(database):
     st.markdown('<p class="main-header">Settings</p>', unsafe_allow_html=True)
     st.write(
+        f"**Repo:** dataaispark-spec/bfsi-agents-fraud-lab  \n"
         f"**Version:** {APP_VERSION}  \n"
         f"**DB backend:** `{DB_BACKEND}`  \n"
         f"**Mode:** Lab / Pilot (synthetic tools)"

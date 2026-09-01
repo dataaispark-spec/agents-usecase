@@ -1,22 +1,22 @@
-# Clerivon AI v1.1.0 — Lab / Pilot Setup
+# BFSI Agents Fraud Lab v1.1.1 — Setup
 
-Honest scope: **synthetic multi-agent fraud demo** with optional Docker.
+Honest scope: **synthetic multi-agent fraud demo** with optional Docker.  
 Not a live core-banking integration.
+
+**Repo:** https://github.com/dataaispark-spec/bfsi-agents-fraud-lab
 
 ## Option A — Local (fastest)
 
 ```bash
-git clone https://github.com/dataaispark-spec/agents-usecase.git
-cd agents-usecase
+git clone https://github.com/dataaispark-spec/bfsi-agents-fraud-lab.git
+cd bfsi-agents-fraud-lab
 python3 -m venv .venv
 source .venv/bin/activate   # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
 
-# optional seed
 python seed.py
-
 streamlit run app.py
-# open http://localhost:8501
+# http://localhost:8501
 ```
 
 **E2E test path**
@@ -37,21 +37,19 @@ cp .env.example .env
 # set SECRET_KEY; leave DB_BACKEND=sqlite for simplest pilot
 
 docker compose -f docker-compose.yml -f docker-compose.lab.yml up --build -d
-
-# UI
 open http://localhost:8501
 ```
 
 Data persists in Docker volume `clerivon_sqlite_data`.
 
-## Option C — Docker + Postgres (shared DB)
+## Option C — Docker + Postgres
 
 ```bash
 # in .env
 DB_BACKEND=postgres
 DB_PASSWORD=choose-a-strong-password
 
-docker compose -f docker-compose.yml -f docker-compose.lab.yml up --build -d
+docker compose -f docker-compose.yml -f docker-compose.lab.yml --profile postgres up --build -d
 ```
 
 App waits for Postgres, creates lab-aligned tables, optional seed.

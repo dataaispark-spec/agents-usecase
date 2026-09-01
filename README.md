@@ -1,8 +1,7 @@
 # BFSI Agents — Fraud Detection Lab (Clerivon AI)
 
-**Repo name (recommended):** `bfsi-agents-fraud-lab`  
-**Current GitHub path:** [dataaispark-spec/agents-usecase](https://github.com/dataaispark-spec/agents-usecase) *(rename when ready — see [REPO_METADATA.md](REPO_METADATA.md))*  
-**Version:** 1.1.0 · **Scope:** Lab / pilot (synthetic tools)
+**Repository:** [dataaispark-spec/bfsi-agents-fraud-lab](https://github.com/dataaispark-spec/bfsi-agents-fraud-lab)  
+**Version:** 1.1.1 · **Scope:** Lab / pilot (synthetic tools)
 
 Multi-agent **BFSI** use case: real-time *demo* transaction fraud screening with a closed-loop analyst flywheel.
 
@@ -18,18 +17,20 @@ Sister project (cyber attack paths): [hermes-skandashield-bots](https://github.c
 
 ---
 
-## Tags / topics
+## Topics
 
-`bfsi` · `fraud-detection` · `multi-agent` · `ai-agents` · `streamlit` · `mcp` · `harness` · `lab-pilot` · `python` · `docker`
+`bfsi` · `fraud-detection` · `multi-agent` · `agents` · `mcp` · `harness` · `lab-pilot` · `banking` · `synthetic-demo` · `python` · `docker`
+
+*(Configured on the GitHub repo About panel.)*
 
 ---
 
 ## Quick start
 
 ```bash
-git clone https://github.com/dataaispark-spec/agents-usecase.git
-cd agents-usecase
-python3 -m venv .venv && source .venv/bin/activate
+git clone https://github.com/dataaispark-spec/bfsi-agents-fraud-lab.git
+cd bfsi-agents-fraud-lab
+python3 -m venv .venv && source .venv/bin/activate   # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
 python seed.py
 streamlit run app.py
@@ -41,9 +42,16 @@ streamlit run app.py
 ```bash
 cp .env.example .env
 docker compose -f docker-compose.yml -f docker-compose.lab.yml up --build -d
+# http://localhost:8501
 ```
 
-Full steps: **[SETUP_LAB.md](SETUP_LAB.md)** · Metadata / rename: **[REPO_METADATA.md](REPO_METADATA.md)**
+Full steps: **[SETUP_LAB.md](SETUP_LAB.md)**
+
+**E2E check:** Live Feed → `impossible_travel` → Generate → Case Review → Confirm/Override → Flywheel.
+
+```bash
+pytest tests/unit -v
+```
 
 ---
 
@@ -59,6 +67,20 @@ Full steps: **[SETUP_LAB.md](SETUP_LAB.md)** · Metadata / rename: **[REPO_METAD
 
 ---
 
+## Lab stack
+
+| Layer | Tech |
+|-------|------|
+| UI | Streamlit |
+| Agents | `fraud_agents/agents.py`, `prime_agents.py` |
+| Tools | `fraud_agents/tools.py` (synthetic) |
+| DB | SQLite default · Postgres optional (`db_factory`) |
+| Harness | `fraud_agents/harness.py` |
+| MCP sample | `fraud_agents/mcp_server.py` |
+| Deploy | Docker Compose + `docker-compose.lab.yml` |
+
+---
+
 ## Docs
 
 | Doc | Purpose |
@@ -67,10 +89,10 @@ Full steps: **[SETUP_LAB.md](SETUP_LAB.md)** · Metadata / rename: **[REPO_METAD
 | [ARCHITECTURE.md](ARCHITECTURE.md) | Pipeline walkthrough |
 | [HARNESS_ENGINEERING.md](HARNESS_ENGINEERING.md) | Guardrails / memory / verify / observe |
 | [CHANGELOG.md](CHANGELOG.md) | Versions |
-| [REPO_METADATA.md](REPO_METADATA.md) | Rename, About text, topics, labels |
+| [REPO_METADATA.md](REPO_METADATA.md) | About text, topics, labels |
 
 ---
 
 ## License
 
-See [LICENSE](LICENSE). Confirm terms before commercial use.
+Apache-2.0 — see [LICENSE](LICENSE).
