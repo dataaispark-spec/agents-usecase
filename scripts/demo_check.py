@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
 """
 Demo readiness check for BFSI Agents Fraud Lab.
-Run from repo root:
 
   PYTHONPATH=. python scripts/demo_check.py
 
-Exit 0 = ready for live demo.
+Exit 0 = READY FOR DEMO
 """
 from __future__ import annotations
 
+import asyncio
 import os
 import sys
 from datetime import datetime
@@ -22,9 +22,8 @@ def main() -> int:
     print("=" * 56)
     print(" BFSI Agents Fraud Lab — demo readiness check")
     print("=" * 56)
-    errors = []
+    errors: list[str] = []
 
-    # 1) Imports
     try:
         from fraud_agents.agents import FraudDetectionPipeline, Transaction
         from fraud_agents.db_factory import db as get_db
@@ -35,14 +34,13 @@ def main() -> int:
         print(f"[FAIL] imports: {e}")
         return 1
 
-    # 2) Harness smoke
     try:
-        import asyncio
 
-        h = AgentHarness()
-        out = asyncio.get_event_loop().run_until_complete(
-            h.execute("Analyze transaction risk", {"amount": 100}, [])
-        )
+        async def _harness():
+            h = AgentHarness()
+            return await h.execute("Analyze transaction risk", {"amount": 100}, [])
+
+        out = asyncio.run(_harness())
         if "error" in out:
             errors.append(f"harness error: {out['error']}")
         else:
@@ -55,7 +53,6 @@ def main() -> int:
         errors.append(f"harness: {e}")
         print(f"[FAIL] harness: {e}")
 
-    # 3) Pipeline + DB
     try:
         pipeline = FraudDetectionPipeline()
         database = get_db()
@@ -71,9 +68,9 @@ def main() -> int:
             device_id="DEV99999",
         )
         result = pipeline.process_transaction(txn)
-        status = result.get("status")
-        decision = result.get("decision")
-        print(f"[OK] pipeline status={status} decision={decision}")
+        print(
+            f"[OK] pipeline status={result.get('status')} decision={result.get('decision')}"
+        )
         if result.get("case_file"):
             ok = database.save_case(result["case_file"])
             if not ok:
@@ -81,12 +78,13 @@ def main() -> int:
             else:
                 print(f"[OK] case saved {result['case_file'].get('case_id')}")
         metrics = database.get_flywheel_metrics()
-        print(f"[OK] db metrics total_cases={metrics.get('total_cases')} pending={metrics.get('pending_cases')}")
+        print(
+            f"[OK] db metrics total_cases={metrics.get('total_cases')} pending={metrics.get('pending_cases')}"
+        )
     except Exception as e:
         errors.append(f"pipeline/db: {e}")
         print(f"[FAIL] pipeline/db: {e}")
 
-    # 4) Scenario coverage (demo stories)
     try:
         scenarios = [
             ("impossible_travel", "CUST001", 4500.0, "Singapore", "5944", "DEV99999"),
@@ -94,7 +92,7 @@ def main() -> int:
         ]
         for name, cid, amt, loc, mcc, dev in scenarios:
             t = Transaction(
-                transaction_id=f"TXN-{name[:6].upper()}-{datetime.now().strftime('%S')}",
+                transaction_id=f"TXN-{name[:6].upper()}-{datetime.now().strftime('%S%f')[:8]}",
                 customer_id=cid,
                 amount=amt,
                 currency="USD",
@@ -124,13 +122,4 @@ def main() -> int:
 
 
 if __name__ == "__main__":
-    # Python 3.10+ friendly asyncio
-    try:
-        import asyncio
-
-        if sys.version_info >= (3, 10):
-            # demo_check uses get_event_loop in older style; patch for 3.10+
-            pass
-    except Exception:
-        pass
     raise SystemExit(main())
