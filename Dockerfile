@@ -1,48 +1,41 @@
-# Clerivon AI Fraud Detection - Production Docker Image
-FROM python:3.13-slim
+# Clerivon AI Fraud Detection — Lab/Pilot image (v1.1.0)
+FROM python:3.12-slim
 
-# Set environment variables
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
     PIP_NO_CACHE_DIR=1 \
-    PIP_DISABLE_PIP_VERSION_CHECK=1
+    PIP_DISABLE_PIP_VERSION_CHECK=1 \
+    APP_VERSION=1.1.0 \
+    DB_BACKEND=sqlite \
+    FRAUD_DB_PATH=/data/fraud_cases.db \
+    AUTO_SEED=true
 
-# Set working directory
 WORKDIR /app
 
-# Install system dependencies
-RUN apt-get update && apt-get install -y \
+RUN apt-get update && apt-get install -y --no-install-recommends \
     gcc \
-    postgresql-client \
     libpq-dev \
     curl \
+    postgresql-client \
+    bash \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy requirements first for better caching
 COPY requirements.txt .
-
-# Install Python dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy application code
 COPY fraud_agents/ ./fraud_agents/
-COPY app.py .
-COPY seed.py .
+COPY app.py seed.py ./
+COPY scripts/ ./scripts/
 
-# Create non-root user for security
-RUN useradd --create-home --shell /bin/bash appuser && \
-    chown -R appuser:appuser /app
+RUN mkdir -p /data && chmod +x /app/scripts/entrypoint.sh
+
+RUN useradd --create-home --shell /bin/bash appuser \
+    && chown -R appuser:appuser /app /data
 USER appuser
 
-# Expose Streamlit port
-EXPOSE 8501
+EXPOSE 8501 8765
 
-# Expose MCP server port (if running separately)
-EXPOSE 8765
-
-# Health check
-HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=5 \
     CMD curl -f http://localhost:8501/_stcore/health || exit 1
 
-# Default command - run Streamlit app
-CMD ["streamlit", "run", "app.py", "--server.address=0.0.0.0", "--server.port=8501"]
+CMD ["bash", "/app/scripts/entrypoint.sh"]
